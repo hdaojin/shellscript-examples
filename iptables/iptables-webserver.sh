@@ -7,7 +7,7 @@
 # Version: 1.0.0
 # Description: This script is used to set iptables rules for webserver.
 # Usage: ./iptables-webserver.sh
-# Apply: RHEL/CentOS/Rocky 8
+# Apply: RHEL/CentOS/Rocky 8 or Debian 11
 
 # Set some variables
 unset LANG
@@ -18,11 +18,37 @@ http_port=80
 https_port=443
 #mod=/sbin/modprobe
 
+# judge if root
+
+if [ "$UID" -ne 0 ];then
+    echo "You must be root to run this script."
+    exit 1
+fi
+
+# judge if RHEL or Debian
+
+if [ -f /etc/redhat-release ]; then
+    os_release="RHEL"
+elif [ -f /etc/debian_version ]; then
+    os_release="Debian"
+else
+    echo "This script is only for RHEL or Debian."
+    exit 1
+fi
+
 # Check and install iptables-services if not exist
+
+if [ "$os_release" == "RHEL"];then
 rpm -q iptables-services >/dev/null 2>&1
 if [ $? -ne 0 ]; then
     dnf -y install iptables-services
 fi
+elif ["$os_release" == "Debian" ];then
+dpkg -s iptables-persistent &> /dev/null
+if [ $? -ne 0 ]; then
+    apt -y install iptables-persistent
+fi
+
 
 # Disable other firewall services
 for service in firewalld ip6tables nftables; do
@@ -60,4 +86,8 @@ $ipts -A FORWARD -j REJECT --reject-with icmp-host-prohibited
 
 # Save rules
 echo "[+] Save rules..."
-service iptables save
+if [ "$os_release" == "RHEL" ];then
+    service iptables save
+elif [ "$os_release" == "Debian" ];then
+    iptables-save > /etc/iptables/rules.v4
+fi
