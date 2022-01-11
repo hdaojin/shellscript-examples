@@ -20,7 +20,7 @@ https_port=443
 
 # judge if root
 
-if [ "$UID" -ne 0 ];then
+if [ "$UID" -ne 0 ]; then
     echo "You must be root to run this script."
     exit 1
 fi
@@ -38,22 +38,22 @@ fi
 
 # Check and install iptables-services if not exist
 
-if [ "$os_release" == "RHEL"];then
-rpm -q iptables-services >/dev/null 2>&1
-if [ $? -ne 0 ]; then
-    dnf -y install iptables-services
+if [ "$os_release" == "RHEL" ]; then
+    rpm -q iptables-services >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        dnf -y install iptables-services
+    fi
+elif [ "$os_release" == "Debian" ]; then
+    dpkg -s iptables-persistent &>/dev/null
+    if [ $? -ne 0 ]; then
+        apt -y install iptables-persistent
+    fi
 fi
-elif ["$os_release" == "Debian" ];then
-dpkg -s iptables-persistent &> /dev/null
-if [ $? -ne 0 ]; then
-    apt -y install iptables-persistent
-fi
-
 
 # Disable other firewall services
 for service in firewalld ip6tables nftables; do
-    systemctl stop $service
-    systemctl disable $service
+    systemctl stop $service &>/dev/null
+    systemctl disable $service &>/dev/null
 done
 
 systemctl start iptables
@@ -86,8 +86,8 @@ $ipts -A FORWARD -j REJECT --reject-with icmp-host-prohibited
 
 # Save rules
 echo "[+] Save rules..."
-if [ "$os_release" == "RHEL" ];then
+if [ "$os_release" == "RHEL" ]; then
     service iptables save
-elif [ "$os_release" == "Debian" ];then
-    iptables-save > /etc/iptables/rules.v4
+elif [ "$os_release" == "Debian" ]; then
+    iptables-save >/etc/iptables/rules.v4
 fi
