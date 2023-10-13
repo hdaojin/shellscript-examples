@@ -4,16 +4,19 @@
 # Name: iptables-webserver.sh
 # Author: Huang Daojin
 # Date: 2022-01-03
-# Version: 1.0.0
+# Update: 2023.10.12
+# Version: 1.0.1
 # Description: This script is used to set iptables rules for webserver.
 # Usage: ./iptables-webserver.sh
-# Apply: RHEL/CentOS/Rocky 8 or Debian 11
+# Apply: RHEL/CentOS/Rocky 8 or Debian 12
+
+Version="1.0.1"
 
 # Set some variables
 unset LANG
 export LANG=en_US.UTF-8
 ipts=/sbin/iptables
-ssh_port=1019
+default_ssh_port=1019
 http_port=80
 https_port=443
 #mod=/sbin/modprobe
@@ -23,6 +26,46 @@ https_port=443
 if [ "$UID" -ne 0 ]; then
     echo "You must be root to run this script."
     exit 1
+fi
+
+usage() {
+    cat <<EOF
+    Usage: $(basename $0) [OPTION]...
+    Set iptables rules for webserver.
+
+    -h        Display this help and exit.
+    -v        Output version information and exit.
+    -p        Set ssh port.
+EOF
+}
+
+while getopts 'hvp:' arg; do
+    case $arg in
+    h)
+        usage
+        exit 0
+        ;;
+    v)
+        echo "$(basename $0) version: $Version"
+        exit 0
+        ;;
+    p)
+        ssh_port=$OPTARG
+        ;;
+    ?)
+        usage
+        exit 1
+        ;;
+    esac
+done
+
+if [ "$ssh_port" -lt 1 -o "$ssh_port" -gt 65535 ]; then
+    echo "The ssh port must be between 1 and 65535."
+    exit 1
+fi
+
+if [ -z "$ssh_port" ]; then
+    ssh_port=$default_ssh_port
 fi
 
 # judge if RHEL or Debian
