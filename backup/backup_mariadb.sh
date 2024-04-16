@@ -10,8 +10,8 @@ DATE=$(date +%Y%m%d%H%M) # 获取当前时间作为文件名的一部分
 # 创建备份文件的文件名
 BACKUP_FILE="$BACKUP_DIR/$DB_NAME-$DATE.sql"
 
-# 使用mysqldump创建备份
-mysqldump -u $DB_USER -p$DB_PASSWORD $DB_NAME > $BACKUP_FILE
+# 使用mysqldump(mariadb-dump)创建备份
+mariadb-dump -u $DB_USER -p$DB_PASSWORD $DB_NAME > $BACKUP_FILE
 
 # 检查mysqldump命令是否成功执行
 if [ $? -eq 0 ]; then
