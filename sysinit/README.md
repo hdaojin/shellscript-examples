@@ -27,7 +27,7 @@ apt install -y curl
 Download and run the script:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/hdaojin/shellscripts-examples/refs/heads/main/sysinit/init-ansible-controller.sh | bash
+curl -sSL https://raw.githubusercontent.com/hdaojin/shellscript-examples/refs/heads/main/sysinit/init-ansible-controller.sh | bash
 ```
 
 
