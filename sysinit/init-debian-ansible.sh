@@ -53,10 +53,23 @@ upgrade_system(){
     apt upgrade -y
 }
 
-
 install_necessary_software(){
     # Install the necessary software
     echo "Installing the necessary software..."
+    apt install -y vim \
+        ssh \
+        bash-completion \
+        sudo \
+        python3 \
+
+    # Auto remove the unnecessary software
+    echo "Auto removing the unnecessary software..."
+    apt autoremove -y
+}
+
+install_necessary_software_for_ansible(){
+    # Install the necessary software
+    echo "Installing the necessary software for ansible controller..."
     apt install -y vim \
         ssh \
         bash-completion \
@@ -108,9 +121,9 @@ set_base_config(){
 
 configure_sudoers(){
     # Set normal user with sudo permission
-    echo "Setting the normal user with sudo permission..."
     read -p "Please enter the username: " user_name
-    id $user_name
+    echo "Setting the normal user with sudo permission..."
+    id $user_name &> /dev/null
     if [ $? -ne 0 ]; then
         useradd -m -s /bin/bash $user_name
         passwd $user_name
@@ -234,31 +247,43 @@ configure_network(){
     fi
 }
 
-
-restart_system(){
-    # Restart the system
-    read -p "Do you want to restart the system? [y/n] " choice
-    if [ $choice == "y" ]; then
-        reboot
-    fi
-}
-
-
 # main
-configure_network
-set_base_config
-configure_sudoers
-replace_apt_source
-upgrade_system
-install_necessary_software
-restart_system
+read -p "Do you want to configure the network? [y/n] " choice
+if [ $choice == "y" -o $choice == "Y" ]; then
+    configure_network
+fi
 
+read -p "Do you want to install the necessary software, such as vim, ssh, bash-completion, sudo, python3? [y/n] " choice
+if [ $choice == "y" -o $choice == "Y" ]; then
+    install_necessary_software
+fi
 
+read -p "Do you want to set the base configuration? [y/n] " choice
+if [ $choice == "y" -o $choice == "Y" ]; then
+    set_base_config
+fi
 
+read -p "Do you want to configure the sudoers? [y/n] " choice
+if [ $choice == "y" -o $choice == "Y" ]; then
+    configure_sudoers
+fi
 
+read -p "Do you want to replace the apt source using the Tsinghua mirror? [y/n] " choice
+if [ $choice == "y" -o $choice == "Y" ]; then
+    replace_apt_source
+fi
 
+read -p "Do you want to upgrade the system? [y/n] " choice
+if [ $choice == "y" -o $choice == "Y" ]; then
+    upgrade_system
+fi
+ 
+read -p "Do you want to install the necessary software for ansible controller, such as vim, ssh, bash-completion, sudo, python3, python3-passlib, ansible, curl, wget, sshpass, git? [y/n] " choice
+if [ $choice == "y" -o $choice == "Y" ]; then
+    install_necessary_software_for_ansible
+fi
 
-
-
-
-
+read -p "Do you want to restart the system? [y/n] " choice
+if [ $choice == "y" -o $choice == "Y" ]; then
+    reboot
+fi
