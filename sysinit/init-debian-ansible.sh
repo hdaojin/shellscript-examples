@@ -54,7 +54,9 @@ upgrade_system(){
 install_necessary_software(){
     # Install the necessary software
     echo "Installing the necessary software..."
-    apt install -y vim \
+    apt install -y 
+        dbus \
+        vim \
         ssh \
         bash-completion \
         sudo \
@@ -63,16 +65,16 @@ install_necessary_software(){
     # Auto remove the unnecessary software
     echo "Auto removing the unnecessary software..."
     apt autoremove -y
+
+    # Start the dbus service
+    echo "Starting the dbus service..."
+    systemctl enable --now dbus
 }
 
 install_necessary_software_for_ansible(){
     # Install the necessary software
     echo "Installing the necessary software for ansible controller..."
-    apt install -y vim \
-        ssh \
-        bash-completion \
-        sudo \
-        python3 \
+    apt install -y
         python3-passlib \
         ansible \
         curl \
@@ -251,7 +253,7 @@ if [ $choice == "y" -o $choice == "Y" ]; then
     configure_network
 fi
 
-read -p "Do you want to install the necessary software, such as vim, ssh, bash-completion, sudo, python3? [y/n] " choice
+read -p "Do you want to install the necessary software, such as dbus, vim, ssh, bash-completion, sudo, python3? [y/n] " choice
 if [ $choice == "y" -o $choice == "Y" ]; then
     install_necessary_software
 fi
@@ -276,7 +278,7 @@ if [ $choice == "y" -o $choice == "Y" ]; then
     upgrade_system
 fi
  
-read -p "Do you want to install the necessary software for ansible controller, such as vim, ssh, bash-completion, sudo, python3, python3-passlib, ansible, curl, wget, sshpass, git? [y/n] " choice
+read -p "Do you want to install the necessary software for ansible controller, such as python3-passlib, ansible, curl, wget, sshpass, git? [y/n] " choice
 if [ $choice == "y" -o $choice == "Y" ]; then
     install_necessary_software_for_ansible
 fi
