@@ -54,8 +54,7 @@ upgrade_system(){
 install_necessary_software(){
     # Install the necessary software
     echo "Installing the necessary software..."
-    apt install -y 
-        dbus \
+    apt install -y dbus \
         vim \
         ssh \
         bash-completion \
@@ -68,14 +67,13 @@ install_necessary_software(){
 
     # Start the dbus service
     echo "Starting the dbus service..."
-    systemctl enable --now dbus
+    systemctl start dbus
 }
 
 install_necessary_software_for_ansible(){
     # Install the necessary software
     echo "Installing the necessary software for ansible controller..."
-    apt install -y
-        python3-passlib \
+    apt install -y python3-passlib \
         ansible \
         curl \
         wget \
@@ -224,12 +222,12 @@ configure_network(){
 
     if check_dynamic_ip; then
         read -p "Do you want to use the dynamic IP address as the static IP address? [y/n] " choice
-        if [ $choice == "y" -o $choice == "Y" ]; then
+        if [[ $choice == "y" || $choice == "Y" ]]; then
             set_static_ip $interface $current_ip $current_gw $current_dns
             restart_network_service
         else
             read -p "Do you want to manually set the static IP address? [y/n] " choice
-            if [ $choice == "y" -o $choice == "Y" ]; then
+            if [[ $choice == "y" || $choice == "Y" ]]; then
                 manual_set_static_ip
                 restart_network_service
             else
@@ -238,7 +236,7 @@ configure_network(){
         fi
     else
         read -p "Do you want to manually set the static IP address? [y/n] " choice
-        if [ $choice == "y" -o $choice == "Y" ]; then
+        if [[ $choice == "y" || $choice == "Y" ]]; then
             manual_set_static_ip
             restart_network_service
         else
@@ -249,41 +247,41 @@ configure_network(){
 
 # main
 read -p "Do you want to configure the network? [y/n] " choice
-if [ $choice == "y" -o $choice == "Y" ]; then
+if [[ $choice == "y" || $choice == "Y" ]]; then
     configure_network
 fi
 
 read -p "Do you want to install the necessary software, such as dbus, vim, ssh, bash-completion, sudo, python3? [y/n] " choice
-if [ $choice == "y" -o $choice == "Y" ]; then
+if [[ $choice == "y" || $choice == "Y" ]]; then
     install_necessary_software
 fi
 
 read -p "Do you want to set the base configuration? [y/n] " choice
-if [ $choice == "y" -o $choice == "Y" ]; then
+if [[ $choice == "y" || $choice == "Y" ]]; then
     set_base_config
 fi
 
 read -p "Do you want to configure the sudoers? [y/n] " choice
-if [ $choice == "y" -o $choice == "Y" ]; then
+if [[ $choice == "y" || $choice == "Y" ]]; then
     configure_sudoers
 fi
 
 read -p "Do you want to replace the apt source using the Tsinghua mirror? [y/n] " choice
-if [ $choice == "y" -o $choice == "Y" ]; then
+if [[ $choice == "y" || $choice == "Y" ]]; then
     replace_apt_source
 fi
 
 read -p "Do you want to upgrade the system? [y/n] " choice
-if [ $choice == "y" -o $choice == "Y" ]; then
+if [[ $choice == "y" || $choice == "Y" ]]; then
     upgrade_system
 fi
  
 read -p "Do you want to install the necessary software for ansible controller, such as python3-passlib, ansible, curl, wget, sshpass, git? [y/n] " choice
-if [ $choice == "y" -o $choice == "Y" ]; then
+if [[ $choice == "y" || $choice == "Y" ]]; then
     install_necessary_software_for_ansible
 fi
 
 read -p "Do you want to restart the system? [y/n] " choice
-if [ $choice == "y" -o $choice == "Y" ]; then
+if [[ $choice == "y" || $choice == "Y" ]]; then
     reboot
 fi

@@ -21,13 +21,16 @@ su - root
 Install curl if it is not installed:
 
 ```bash
-apt install -y curl
+# apt install -y curl
+apt install -y wget
 ```
 
 Download and run the script:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/hdaojin/shellscript-examples/refs/heads/main/sysinit/init-debian-ansible.sh | bash
+# curl -sSL https://raw.githubusercontent.com/hdaojin/shellscript-examples/refs/heads/main/sysinit/init-debian-ansible.sh | bash
+wget https://codeload.github.com/hdaojin/shellscript-examples/tar.gz/refs/tags/v1.0.0
+# Replace the version with the latest version.
 ```
 
 
